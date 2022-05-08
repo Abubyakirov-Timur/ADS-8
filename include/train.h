@@ -1,20 +1,62 @@
 // Copyright 2022 NNTU-CS
-#ifndef INCLUDE_TRAIN_H_
-#define INCLUDE_TRAIN_H_
+#include "train.h"
 
-class Train {
- private:
-  struct Cage {
-    bool light; // состояние лампочки
-    Cage *next;
-    Cage *prev;
-  };
-  int countOp; // счетчик шагов (число переходов из вагона в вагон)
-  Cage *first; // точка входа в поезд (первый вагон)
- public:
-  Train();
-  void addCage(bool light); // добавить вагон с начальным состоянием лампочки
-  int getLength();          // вычислить длину поезда
-  int getOpCount();         // вернуть число переходов (из вагона в вагон)
-};
-#endif  // INCLUDE_TRAIN_H_
+Train::Cage *Train::create(bool light) {
+  Cage* item = new Cage;
+  item->light = light;
+  item->next = item->prev = nullptr;
+  return item;
+}
+
+Train::Train() :countOp(0), first(nullptr), tail(nullptr) {}
+Train::Cage *Train::create(bool light) {
+  Cage *temp = new Cage;
+  temp->light = light;
+  temp->next = nullptr;
+  temp->prev = nullptr;
+  return temp;
+}
+
+void Train::addCage(bool light) {
+  if (!(first)) {
+    first = create(light);
+    current = first;
+  } else {
+    current->next = create(light);
+    current->next->prev = current;
+    current = current->next;
+    if (!current->next) {
+      current->next = first;
+    } else {
+      first->prev = current;
+    }
+  }
+}
+int Train::getLength() {
+  first->light = true;
+  current = first;
+  int temp;
+  while (true) {
+    ++countOp, ++Count;
+    current = current->next;
+    if (current->light) {
+      temp = Count;
+      current->light = false;
+      if ((current->prev) != nullptr) {
+        while (current->light == false) {
+          current = current->prev;
+          --Count, ++countOp;
+        }
+      }
+      if (!current->light) {
+        length = temp;
+        break;
+      }
+    }
+  }
+  countOp += length;
+  return length;
+}
+int Train::getOpCount() {
+  return countOp;
+}
