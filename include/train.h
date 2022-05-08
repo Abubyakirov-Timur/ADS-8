@@ -8,13 +8,9 @@ Train::Cage *Train::create(bool light) {
   return item;
 }
 
-Train::Train() :countOp(0), first(nullptr), tail(nullptr) {}
-Train::Cage *Train::create(bool light) {
-  Cage *temp = new Cage;
-  temp->light = light;
-  temp->next = nullptr;
-  temp->prev = nullptr;
-  return temp;
+Train::Train() {
+  first = current = nullptr;
+  countOp = length = Count = 0;
 }
 
 void Train::addCage(bool light) {
@@ -32,6 +28,7 @@ void Train::addCage(bool light) {
     }
   }
 }
+
 int Train::getLength() {
   first->light = true;
   current = first;
@@ -57,6 +54,7 @@ int Train::getLength() {
   countOp += length;
   return length;
 }
+
 int Train::getOpCount() {
   return countOp;
 }
