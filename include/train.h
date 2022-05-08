@@ -1,60 +1,56 @@
 // Copyright 2022 NNTU-CS
 #include "train.h"
 
+Train::Train() :countOp(0), first(nullptr), tail(nullptr) {}
+
 Train::Cage *Train::create(bool light) {
-  Cage* item = new Cage;
-  item->light = light;
-  item->next = item->prev = nullptr;
-  return item;
+  Cage *temp = new Cage;
+  temp->light = light;
+  temp->next = nullptr;
+  temp->prev = nullptr;
+  return temp;
 }
 
-Train::Train() {
-  first = current = nullptr;
-  countOp = length = Count = 0;
+int Train::getOpCount() {
+  return countOp;
 }
 
 void Train::addCage(bool light) {
-  if (!(first)) {
-    first = create(light);
-    current = first;
-  } else {
-    current->next = create(light);
-    current->next->prev = current;
-    current = current->next;
-    if (!current->next) {
-      current->next = first;
-    } else {
-      first->prev = current;
+  if (first && tail) {
+    tail->next = create(light);
+    tail->next->prev = tail;
+    tail = tail->next;
+    if (!tail->next) {
+      tail->next = first;
     }
+    if (!first->prev) {
+      first->prev = tail;
+    }
+  } else {
+    first = create(light);
+    tail = first;
   }
 }
 
 int Train::getLength() {
   first->light = true;
-  current = first;
-  int temp;
+  Cage *temp = first;
+  int tempCount = 0, length = 0;
   while (true) {
-    ++countOp, ++Count;
-    current = current->next;
-    if (current->light) {
-      temp = Count;
-      current->light = false;
-      if ((current->prev) != nullptr) {
-        while (current->light == false) {
-          current = current->prev;
-          --Count, ++countOp;
-        }
+    ++countOp;
+    ++tempCount;
+    temp = temp->next;
+    if (temp->light) {
+      int tmp = tempCount;
+      temp->light = false;
+      for (int i = tempCount; tempCount; --tempCount, ++countOp) {
+        temp = temp->prev;
       }
-      if (!current->light) {
-        length = temp;
+      if (!temp->light) {
+        length = tmp;
         break;
       }
     }
   }
-  countOp += length;
   return length;
-}
-
-int Train::getOpCount() {
-  return countOp;
 }
